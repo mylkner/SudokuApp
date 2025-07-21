@@ -1,4 +1,6 @@
 using Server.Middleware;
+using Server.Services;
+using Server.Services.Interfaces;
 
 namespace Server.Extensions;
 
@@ -16,6 +18,7 @@ public static class ServiceCollectionExtensions
         services.AddControllers();
         services.AddOpenApi();
         services.AddProblemDetails();
+        services.AddScoped<ISudokuService, SudokuService>();
         return services;
     }
 
