@@ -19,7 +19,11 @@ public static class ServiceCollectionExtensions
         services.AddOpenApi();
         services.AddProblemDetails();
         services.AddDistributedMemoryCache();
-        services.AddSession();
+        services.AddSession(options =>
+        {
+            options.Cookie.Name = "SessionId";
+            options.IdleTimeout = TimeSpan.FromHours(4);
+        });
         services.AddScoped<ISudokuService, SudokuService>();
         return services;
     }
