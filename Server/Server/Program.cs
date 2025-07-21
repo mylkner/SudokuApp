@@ -1,5 +1,5 @@
-using Server.Extensions;
 using Scalar.AspNetCore;
+using Server.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
