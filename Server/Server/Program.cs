@@ -20,5 +20,6 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseSession();
 app.MapControllers();
 app.Run();

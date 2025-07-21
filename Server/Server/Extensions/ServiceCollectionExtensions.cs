@@ -18,6 +18,8 @@ public static class ServiceCollectionExtensions
         services.AddControllers();
         services.AddOpenApi();
         services.AddProblemDetails();
+        services.AddDistributedMemoryCache();
+        services.AddSession();
         services.AddScoped<ISudokuService, SudokuService>();
         return services;
     }
