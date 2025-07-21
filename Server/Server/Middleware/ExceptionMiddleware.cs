@@ -16,7 +16,7 @@ public class ExceptionMiddleware(IHostEnvironment env, ILogger<ExceptionMiddlewa
     {
         ProblemDetails errorRes = new();
 
-        bool showDetails = !env.IsDevelopment();
+        bool showDetails = env.IsDevelopment();
         string title = "Internal Server Error";
         int statusCode = (int)HttpStatusCode.InternalServerError;
         string detail = "An error has occurred.";
