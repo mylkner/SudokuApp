@@ -8,7 +8,7 @@ namespace Server.Controllers;
 [Route("api/sudoku")]
 public class SudokuController(ISudokuService sudokuService) : ControllerBase
 {
-    [HttpGet("generate-board")]
+    [HttpPost("generate-board")]
     public ActionResult<string> GetSudokuBoard(DifficultyDto difficultyDto)
     {
         string board = sudokuService.GenerateSudokuBoard(difficultyDto);
