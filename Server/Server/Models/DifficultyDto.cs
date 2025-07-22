@@ -2,5 +2,5 @@ namespace Server.Models;
 
 public class DifficultyDto
 {
-    public int Difficulty { get; set; }
+    public string Difficulty { get; set; } = string.Empty;
 }
