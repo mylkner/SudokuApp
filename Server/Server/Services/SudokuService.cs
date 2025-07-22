@@ -126,9 +126,9 @@ public class SudokuService : ISudokuService
         while (blanksMade < blanksToMake)
         {
             int pos = rand.Next(81);
-            if (board[pos] != '0')
+            if (board[pos] != '.')
             {
-                board[pos] = '0';
+                board[pos] = '.';
                 blanksMade++;
             }
         }
