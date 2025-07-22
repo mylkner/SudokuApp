@@ -4,6 +4,6 @@ namespace Server.Services.Interfaces;
 
 public interface ISudokuService
 {
-    string GenerateSudokuBoard(DifficultyDto difficultyDto);
+    string GenerateSudokuBoard(string difficulty);
     bool CheckUserInput(UserInputDto userInputDto);
 }
