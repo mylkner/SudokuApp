@@ -44,6 +44,7 @@ public class ExceptionMiddleware(IHostEnvironment env, ILogger<ExceptionMiddlewa
             httpContext.TraceIdentifier
         );
 
+        httpContext.Response.StatusCode = statusCode;
         await httpContext.Response.WriteAsJsonAsync(errorRes, cancellationToken: cancellationToken);
         return true;
     }
