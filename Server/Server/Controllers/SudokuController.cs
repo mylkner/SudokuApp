@@ -11,7 +11,7 @@ public class SudokuController(ISudokuService sudokuService) : ControllerBase
     [HttpPost("generate-board")]
     public ActionResult<string> GetSudokuBoard(DifficultyDto difficultyDto)
     {
-        string board = sudokuService.GenerateSudokuBoard(difficultyDto);
+        string board = sudokuService.GenerateSudokuBoard(difficultyDto.Difficulty);
         return Ok(board);
     }
 
