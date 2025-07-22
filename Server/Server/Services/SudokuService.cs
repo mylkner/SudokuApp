@@ -110,7 +110,7 @@ public class SudokuService : ISudokuService
     private static string MakePartialBoard(string flattenedBoard, string difficulty, Random rand)
     {
         char[] board = flattenedBoard.ToCharArray();
-
+        //todo: add unique solution check
         int blanksToMake = difficulty switch
         {
             "Easy" => 35,
