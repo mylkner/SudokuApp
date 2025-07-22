@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Server.Models;
 using Server.Services.Interfaces;
 
 namespace Server.Controllers;
@@ -8,16 +9,16 @@ namespace Server.Controllers;
 public class SudokuController(ISudokuService sudokuService) : ControllerBase
 {
     [HttpGet("generate-board")]
-    public ActionResult<string> GetSudokuBoard()
+    public ActionResult<string> GetSudokuBoard(DifficultyDto difficultyDto)
     {
-        string board = sudokuService.GenerateSudokuBoard();
+        string board = sudokuService.GenerateSudokuBoard(difficultyDto);
         return Ok(board);
     }
 
     [HttpPost("check-input")]
-    public ActionResult<bool> CheckInput()
+    public ActionResult<bool> CheckInput(UserInputDto userInputDto)
     {
-        bool correct = sudokuService.CheckUserInput();
+        bool correct = sudokuService.CheckUserInput(userInputDto);
         return Ok(correct);
     }
 }

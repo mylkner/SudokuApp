@@ -1,7 +1,9 @@
+using Server.Models;
+
 namespace Server.Services.Interfaces;
 
 public interface ISudokuService
 {
-    string GenerateSudokuBoard();
-    bool CheckUserInput();
+    string GenerateSudokuBoard(DifficultyDto difficultyDto);
+    bool CheckUserInput(UserInputDto userInputDto);
 }
