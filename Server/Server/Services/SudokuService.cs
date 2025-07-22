@@ -10,11 +10,12 @@ public class SudokuService : ISudokuService
 {
     public string GenerateSudokuBoard(string difficulty, HttpContext context)
     {
+        Random rand = new();
         int[,] board = new int[9, 9];
-        FillBoard(board);
+        FillBoard(board, rand);
         string flattenedBoard = FlattenBoard(board);
         context.Session.SetString("SudokuBoard", flattenedBoard);
-        return MakePartialBoard(flattenedBoard, difficulty);
+        return MakePartialBoard(flattenedBoard, difficulty, rand);
     }
 
     public bool CheckUserInput(UserInputDto userInputDto, HttpContext context)
@@ -27,7 +28,7 @@ public class SudokuService : ISudokuService
         return solvedBoard[index] == userInputDto.Value + '0';
     }
 
-    private static bool FillBoard(int[,] board)
+    private static bool FillBoard(int[,] board, Random rand)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -35,13 +36,13 @@ public class SudokuService : ISudokuService
             {
                 if (board[row, col] == 0)
                 {
-                    List<int> nums = GetShuffledNumbers();
+                    List<int> nums = GetShuffledNumbers(rand);
                     foreach (int num in nums)
                     {
                         if (IsValid(board, row, col, num))
                         {
                             board[row, col] = num;
-                            if (FillBoard(board))
+                            if (FillBoard(board, rand))
                                 return true;
                             board[row, col] = 0;
                         }
@@ -53,11 +54,10 @@ public class SudokuService : ISudokuService
         return true;
     }
 
-    private static List<int> GetShuffledNumbers()
+    private static List<int> GetShuffledNumbers(Random rand)
     {
         List<int> nums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         int length = 9;
-        Random rand = new();
 
         while (length > 1)
         {
@@ -98,10 +98,8 @@ public class SudokuService : ISudokuService
 
         for (int row = 0; row < 9; row++)
         {
-            Console.WriteLine();
             for (int col = 0; col < 9; col++)
             {
-                Console.Write(board[row, col]);
                 sb.Append(board[row, col]);
             }
         }
@@ -109,10 +107,9 @@ public class SudokuService : ISudokuService
         return sb.ToString();
     }
 
-    private static string MakePartialBoard(string flattenedBoard, string difficulty)
+    private static string MakePartialBoard(string flattenedBoard, string difficulty, Random rand)
     {
         char[] board = flattenedBoard.ToCharArray();
-        Random rand = new();
 
         int blanksToMake = difficulty switch
         {
@@ -123,6 +120,7 @@ public class SudokuService : ISudokuService
             _ => 45,
         };
         int blanksMade = 0;
+
         while (blanksMade < blanksToMake)
         {
             int pos = rand.Next(81);
