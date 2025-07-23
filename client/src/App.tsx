@@ -80,7 +80,7 @@ const App = () => {
             {isPending && <Spinner />}
             {paused && (
                 <div
-                    className="rounded-full h-1/3 w-1/3 bg-blue-500 flex items-center justify-center"
+                    className="rounded-full h-1/3 w-1/3 bg-blue-500 flex items-center justify-center cursor-pointer"
                     onClick={() => setPaused(false)}
                 >
                     <div
