@@ -8,15 +8,8 @@ interface SudokuCellProps {
 }
 
 const SudokuCell = ({ index, value }: SudokuCellProps) => {
-    const {
-        board,
-        setBoard,
-        playing,
-        setPlaying,
-        mistakes,
-        setMistakes,
-        reset,
-    } = useAppContext();
+    const { board, setBoard, playing, mistakes, setMistakes, reset } =
+        useAppContext();
 
     const validate = useMutation({
         mutationFn: async (attemptedInput: number) => {
