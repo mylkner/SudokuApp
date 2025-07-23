@@ -8,7 +8,15 @@ interface SudokuCellProps {
 }
 
 const SudokuCell = ({ index, value }: SudokuCellProps) => {
-    const { board, setBoard, playing, setPlaying } = useAppContext();
+    const {
+        board,
+        setBoard,
+        playing,
+        setPlaying,
+        mistakes,
+        setMistakes,
+        reset,
+    } = useAppContext();
 
     const validate = useMutation({
         mutationFn: async (attemptedInput: number) => {
@@ -18,7 +26,13 @@ const SudokuCell = ({ index, value }: SudokuCellProps) => {
                 { withCredentials: true }
             );
 
-            if (valid) updateBoard(index, attemptedInput.toString());
+            if (valid) {
+                updateBoard(index, attemptedInput.toString());
+            } else {
+                const newMistakes = mistakes + 1;
+                setMistakes(newMistakes);
+                if (newMistakes === 3) reset();
+            }
         },
     });
 
@@ -32,7 +46,7 @@ const SudokuCell = ({ index, value }: SudokuCellProps) => {
         for (let i = 0; i < 81; i++) {
             if (board[i] === ".") return;
         }
-        setPlaying(false);
+        reset();
         await axios.delete("/api/sudoku/remove-saved-board");
     };
 

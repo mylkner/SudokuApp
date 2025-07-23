@@ -19,6 +19,9 @@ interface AppContextState {
     setPaused: Dispatch<SetStateAction<boolean>>;
     time: number;
     setTime: Dispatch<SetStateAction<number>>;
+    mistakes: number;
+    setMistakes: Dispatch<SetStateAction<number>>;
+    reset: () => void;
 }
 
 const AppContext = createContext<AppContextState | undefined>(undefined);
@@ -31,6 +34,15 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
     const [playing, setPlaying] = useState<boolean>(false);
     const [paused, setPaused] = useState<boolean>(false);
     const [time, setTime] = useState<number>(0);
+    const [mistakes, setMistakes] = useState<number>(0);
+
+    const reset = () => {
+        setBoard("");
+        setPlaying(false);
+        setPaused(false);
+        setTime(0);
+        setMistakes(0);
+    };
 
     return (
         <AppContext.Provider
@@ -45,6 +57,9 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
                 setPaused,
                 time,
                 setTime,
+                mistakes,
+                setMistakes,
+                reset,
             }}
         >
             {children}

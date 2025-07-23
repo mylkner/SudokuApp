@@ -16,6 +16,8 @@ const App = () => {
         setPaused,
         playing,
         setPlaying,
+        mistakes,
+        reset,
     } = useAppContext();
 
     const buttonClass =
@@ -72,7 +74,7 @@ const App = () => {
             <div className="flex flex-col gap-1">
                 <div className="flex justify-between">
                     <Timer />
-                    {difficulty}
+                    <span>{difficulty + "  " + mistakes + " / 3"}</span>
                 </div>
                 <div className="relative grid grid-cols-9 grid-rows-9 w-fit">
                     {boardCover}
@@ -86,7 +88,6 @@ const App = () => {
             </div>
 
             <div className="flex flex-col gap-3">
-                <DifficultySelect />
                 {playing ? (
                     <>
                         <button
@@ -95,25 +96,21 @@ const App = () => {
                         >
                             {paused ? "Play" : "Pause"}
                         </button>
-                        <button
-                            className={buttonClass}
-                            onClick={() => {
-                                setPaused(false);
-                                setPlaying(false);
-                                setBoard("");
-                            }}
-                        >
+                        <button className={buttonClass} onClick={reset}>
                             Reset
                         </button>
                     </>
                 ) : (
-                    <button
-                        className={buttonClass}
-                        onClick={() => mutate()}
-                        disabled={playing}
-                    >
-                        Start
-                    </button>
+                    <>
+                        <DifficultySelect />
+                        <button
+                            className={buttonClass}
+                            onClick={() => mutate()}
+                            disabled={playing}
+                        >
+                            Start
+                        </button>
+                    </>
                 )}
             </div>
         </div>

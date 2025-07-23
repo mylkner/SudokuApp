@@ -5,11 +5,7 @@ const Timer = () => {
     const { time, setTime, playing, paused } = useAppContext();
 
     useEffect(() => {
-        if (!playing) {
-            setTime(0);
-            return;
-        }
-        if (paused) return;
+        if (!playing || paused) return;
 
         const interval = setInterval(() => setTime((prev) => prev + 1), 1000);
         return () => clearInterval(interval);
