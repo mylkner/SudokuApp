@@ -1,19 +1,15 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { useAppContext } from "../context/AppContext";
 
 interface SudokuCellProps {
     index: number;
     value: string;
-    updateBoard: (index: number, value: string) => void;
-    playing: boolean;
 }
 
-const SudokuCell = ({
-    index,
-    value,
-    updateBoard,
-    playing,
-}: SudokuCellProps) => {
+const SudokuCell = ({ index, value }: SudokuCellProps) => {
+    const { board, setBoard, playing, setPlaying } = useAppContext();
+
     const validate = useMutation({
         mutationFn: async (attemptedInput: number) => {
             const { data: valid } = await axios.post(
@@ -25,6 +21,20 @@ const SudokuCell = ({
             if (valid) updateBoard(index, attemptedInput.toString());
         },
     });
+
+    const updateBoard = (index: number, value: string): void => {
+        const newBoard = board.slice(0, index) + value + board.slice(index + 1);
+        setBoard(newBoard);
+        checkCompletion(newBoard);
+    };
+
+    const checkCompletion = async (board: string): Promise<void> => {
+        for (let i = 0; i < 81; i++) {
+            if (board[i] === ".") return;
+        }
+        setPlaying(false);
+        await axios.delete("/api/sudoku/remove-saved-board");
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const attemptedInput = e.target.value;

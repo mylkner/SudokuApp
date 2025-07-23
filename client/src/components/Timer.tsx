@@ -1,12 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useAppContext } from "../context/AppContext";
 
-interface TimerProps {
-    playing: boolean;
-    paused: boolean;
-}
-
-const Timer = ({ playing, paused }: TimerProps) => {
-    const [time, setTime] = useState<number>(0);
+const Timer = () => {
+    const { time, setTime, playing, paused } = useAppContext();
 
     useEffect(() => {
         if (!playing) {
@@ -15,9 +11,9 @@ const Timer = ({ playing, paused }: TimerProps) => {
         }
         if (paused) return;
 
-        const interval = setInterval(() => setTime((prev) => prev + 1), 1);
+        const interval = setInterval(() => setTime((prev) => prev + 1), 1000);
         return () => clearInterval(interval);
-    }, [playing, paused]);
+    }, [playing, paused, setTime]);
 
     const formatTime = (): string => {
         const seconds = time % 60;

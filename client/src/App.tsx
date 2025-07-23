@@ -1,20 +1,22 @@
-import { useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
 import type { ErrorDetails } from "./axios/axiosErrorType";
-import { difficulties, type Difficulties } from "./types/difficulty";
 import SudokuCell from "./components/SudokuCell";
 import DifficultySelect from "./components/DifficultySelect";
 import Spinner from "./components/Spinner";
 import Timer from "./components/Timer";
+import { useAppContext } from "./context/AppContext";
 
 const App = () => {
-    const [difficulty, setDifficulty] = useState<Difficulties>(
-        difficulties.Medium
-    );
-    const [board, setBoard] = useState<string>("");
-    const [playing, setPlaying] = useState<boolean>(false);
-    const [paused, setPaused] = useState<boolean>(false);
+    const {
+        difficulty,
+        board,
+        setBoard,
+        paused,
+        setPaused,
+        playing,
+        setPlaying,
+    } = useAppContext();
 
     const buttonClass =
         "px-5 py-3 rounded bg-blue-600 cursor-pointer hover:bg-blue-700 transition-colors text-white";
@@ -37,20 +39,6 @@ const App = () => {
             setBoard(data);
         },
     });
-
-    const updateBoard = (index: number, value: string): void => {
-        const newBoard = board.slice(0, index) + value + board.slice(index + 1);
-        setBoard(newBoard);
-        checkCompletion(newBoard);
-    };
-
-    const checkCompletion = async (board: string): Promise<void> => {
-        for (let i = 0; i < 81; i++) {
-            if (board[i] === ".") return;
-        }
-        setPlaying(false);
-        await axios.delete("/api/sudoku/remove-saved-board");
-    };
 
     const boardCover = (isPending || paused) && (
         <div className="absolute inset-0 bg-black flex justify-center items-center">
@@ -76,8 +64,6 @@ const App = () => {
             key={i}
             index={i}
             value={board[i] === "." ? "" : board[i] || ""}
-            updateBoard={updateBoard}
-            playing={playing}
         />
     ));
 
@@ -85,7 +71,7 @@ const App = () => {
         <div className="w-full h-screen flex items-center justify-center gap-3">
             <div className="flex flex-col gap-1">
                 <div className="flex justify-between">
-                    <Timer playing={playing} paused={paused} />
+                    <Timer />
                     {difficulty}
                 </div>
                 <div className="relative grid grid-cols-9 grid-rows-9 w-fit">
@@ -100,11 +86,7 @@ const App = () => {
             </div>
 
             <div className="flex flex-col gap-3">
-                <DifficultySelect
-                    currentDifficulty={difficulty}
-                    setDifficulty={setDifficulty}
-                    playing={playing}
-                />
+                <DifficultySelect />
                 {playing ? (
                     <>
                         <button
