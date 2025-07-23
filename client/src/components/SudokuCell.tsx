@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { useAppContext } from "../context/AppContext";
+import { useState } from "react";
 
 interface SudokuCellProps {
     index: number;
@@ -11,6 +12,7 @@ interface SudokuCellProps {
 const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
     const { playing, mistakes, setMistakes, reset, setMessage } =
         useAppContext();
+    const [bgColor, setBgColor] = useState("bg-black");
 
     const validate = useMutation({
         mutationFn: async (attemptedInput: number) => {
@@ -22,7 +24,10 @@ const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
 
             if (valid) {
                 updateBoard(index, attemptedInput.toString());
+                setBgColor("bg-green-500");
+                setTimeout(() => setBgColor("bg-black"), 3000);
             } else {
+                setBgColor("bg-red-500");
                 const newMistakes = mistakes + 1;
                 setMistakes(newMistakes);
                 if (newMistakes === 3) {
@@ -59,11 +64,9 @@ const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
             type="text"
             inputMode="numeric"
             pattern="[0-9]"
-            className={
-                "bg-black h-10 w-10 text-white text-center focus:outline-none " +
-                getBorder()
-            }
+            className={`h-10 w-10 text-white text-center focus:outline-none ${getBorder()} ${bgColor}`}
             disabled={value != "" || !playing}
+            onBlur={() => setBgColor("bg-black")}
         />
     );
 };
