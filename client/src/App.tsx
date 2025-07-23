@@ -105,7 +105,7 @@ const App = () => {
 
     return (
         <div className="w-full h-screen p-5 flex flex-col items-center justify-center gap-3">
-            <div className="flex flex-col gap-1 max-w-[360px]">
+            <div className="flex flex-col gap-1 max-w-[360px] text-white">
                 <div className="flex justify-between">
                     <Timer />
                     <span>{difficulty + "  " + mistakes + " / 3"}</span>
