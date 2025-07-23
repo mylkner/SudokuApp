@@ -18,6 +18,7 @@ const App = () => {
         mistakes,
         message,
         setMessage,
+        time,
         reset,
     } = useAppContext();
 
@@ -50,9 +51,28 @@ const App = () => {
         for (let i = 0; i < 81; i++) {
             if (board[i] === ".") return;
         }
-        setMessage(`You won on ${diff} in `);
+        setMessage(
+            `You won on ${
+                difficulty.slice(0, 1).toLowerCase() + difficulty.slice(1)
+            } mode in ${formatFinishTime(time)}.`
+        );
         reset();
         await axios.delete("/api/sudoku/remove-saved-board");
+    };
+
+    const formatFinishTime = (finishTime: number): string => {
+        const seconds = finishTime % 60;
+        const minutes = Math.floor(finishTime / 60) % 60;
+        const hours = Math.floor(finishTime / 3600);
+
+        const formatName = (type: string, num: number) => {
+            return `${num} ${num === 1 ? type.slice(0, -1) : type}`;
+        };
+
+        return `${formatName("hours", hours)}, ${formatName(
+            "minutes",
+            minutes
+        )} and ${formatName("seconds", seconds)}`;
     };
 
     const boardCover = (isPending || paused) && (
@@ -84,25 +104,31 @@ const App = () => {
     ));
 
     return (
-        <div className="w-full h-screen flex items-center justify-center gap-3">
-            <div className="flex flex-col gap-1">
+        <div className="w-full h-screen p-5 flex flex-col items-center justify-center gap-3">
+            <div className="flex flex-col gap-1 max-w-[360px]">
                 <div className="flex justify-between">
                     <Timer />
                     <span>{difficulty + "  " + mistakes + " / 3"}</span>
                 </div>
+
                 <div className="relative grid grid-cols-9 grid-rows-9 w-fit">
                     {boardCover}
                     {boardLayout}
                 </div>
+
                 {isError && (
                     <p className="text-red-500 font-semibold">
                         {error.response?.data.detail}
                     </p>
                 )}
-                {message && <p className="font-semibold">{message}</p>}
+                {message && (
+                    <p className="font-semibold text-wrap">{message}</p>
+                )}
             </div>
 
-            {<Controls mutate={mutate} />}
+            <div className="flex flex-col gap-2 min-w-[360px]">
+                {<Controls mutate={mutate} />}
+            </div>
         </div>
     );
 };
