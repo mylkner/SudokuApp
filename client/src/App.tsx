@@ -1,5 +1,7 @@
+import Home from "./Home";
+
 function App() {
-    return <p className="text-red-500">hello</p>;
+    return <Home />;
 }
 
 export default App;
