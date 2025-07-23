@@ -2,10 +2,10 @@ import axios, { AxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
 import type { ErrorDetails } from "./axios/axiosErrorType";
 import SudokuCell from "./components/SudokuCell";
-import DifficultySelect from "./components/DifficultySelect";
 import Spinner from "./components/Spinner";
 import Timer from "./components/Timer";
 import { useAppContext } from "./context/AppContext";
+import Controls from "./components/Controls";
 
 const App = () => {
     const {
@@ -14,14 +14,12 @@ const App = () => {
         setBoard,
         paused,
         setPaused,
-        playing,
         setPlaying,
         mistakes,
+        message,
+        setMessage,
         reset,
     } = useAppContext();
-
-    const buttonClass =
-        "px-5 py-3 rounded bg-blue-600 cursor-pointer hover:bg-blue-700 transition-colors text-white";
 
     const { mutate, isError, isPending, error } = useMutation<
         string,
@@ -41,6 +39,21 @@ const App = () => {
             setBoard(data);
         },
     });
+
+    const updateBoard = (index: number, value: string): void => {
+        const newBoard = board.slice(0, index) + value + board.slice(index + 1);
+        setBoard(newBoard);
+        checkCompletion(newBoard);
+    };
+
+    const checkCompletion = async (board: string): Promise<void> => {
+        for (let i = 0; i < 81; i++) {
+            if (board[i] === ".") return;
+        }
+        setMessage(`You won on ${diff} in `);
+        reset();
+        await axios.delete("/api/sudoku/remove-saved-board");
+    };
 
     const boardCover = (isPending || paused) && (
         <div className="absolute inset-0 bg-black flex justify-center items-center">
@@ -66,6 +79,7 @@ const App = () => {
             key={i}
             index={i}
             value={board[i] === "." ? "" : board[i] || ""}
+            updateBoard={updateBoard}
         />
     ));
 
@@ -85,34 +99,10 @@ const App = () => {
                         {error.response?.data.detail}
                     </p>
                 )}
+                {message && <p className="font-semibold">{message}</p>}
             </div>
 
-            <div className="flex flex-col gap-3">
-                {playing ? (
-                    <>
-                        <button
-                            className={buttonClass}
-                            onClick={() => setPaused(!paused)}
-                        >
-                            {paused ? "Play" : "Pause"}
-                        </button>
-                        <button className={buttonClass} onClick={reset}>
-                            Reset
-                        </button>
-                    </>
-                ) : (
-                    <>
-                        <DifficultySelect />
-                        <button
-                            className={buttonClass}
-                            onClick={() => mutate()}
-                            disabled={playing}
-                        >
-                            Start
-                        </button>
-                    </>
-                )}
-            </div>
+            {<Controls mutate={mutate} />}
         </div>
     );
 };

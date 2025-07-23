@@ -5,10 +5,11 @@ import { useAppContext } from "../context/AppContext";
 interface SudokuCellProps {
     index: number;
     value: string;
+    updateBoard: (index: number, value: string) => void;
 }
 
-const SudokuCell = ({ index, value }: SudokuCellProps) => {
-    const { board, setBoard, playing, mistakes, setMistakes, reset } =
+const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
+    const { playing, mistakes, setMistakes, reset, setMessage } =
         useAppContext();
 
     const validate = useMutation({
@@ -24,24 +25,13 @@ const SudokuCell = ({ index, value }: SudokuCellProps) => {
             } else {
                 const newMistakes = mistakes + 1;
                 setMistakes(newMistakes);
-                if (newMistakes === 3) reset();
+                if (newMistakes === 3) {
+                    setMessage("You lost. Try again?");
+                    reset();
+                }
             }
         },
     });
-
-    const updateBoard = (index: number, value: string): void => {
-        const newBoard = board.slice(0, index) + value + board.slice(index + 1);
-        setBoard(newBoard);
-        checkCompletion(newBoard);
-    };
-
-    const checkCompletion = async (board: string): Promise<void> => {
-        for (let i = 0; i < 81; i++) {
-            if (board[i] === ".") return;
-        }
-        reset();
-        await axios.delete("/api/sudoku/remove-saved-board");
-    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const attemptedInput = e.target.value;
