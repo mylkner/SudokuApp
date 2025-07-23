@@ -5,9 +5,15 @@ interface SudokuCellProps {
     index: number;
     value: string;
     updateBoard: (index: number, value: string) => void;
+    playing: boolean;
 }
 
-const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
+const SudokuCell = ({
+    index,
+    value,
+    updateBoard,
+    playing,
+}: SudokuCellProps) => {
     const validate = useMutation({
         mutationFn: async (attemptedInput: number) => {
             const { data: valid } = await axios.post(
@@ -50,7 +56,7 @@ const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
                 "bg-black h-10 w-10 text-white text-center focus:outline-none " +
                 getBorder()
             }
-            disabled={value != ""}
+            disabled={value != "" || !playing}
         />
     );
 };
