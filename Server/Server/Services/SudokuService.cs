@@ -23,9 +23,8 @@ public class SudokuService : ISudokuService
         string solvedBoard =
             context.Session.GetString("SudokuBoard")
             ?? throw new BadRequestException("No board found");
-        int index = userInputDto.Row * 9 + userInputDto.Column;
 
-        return solvedBoard[index] == userInputDto.Value + '0';
+        return solvedBoard[userInputDto.Index] == userInputDto.Value + '0';
     }
 
     private static bool FillBoard(int[,] board, Random rand)
