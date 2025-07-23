@@ -25,12 +25,12 @@ const DifficultySelect = ({
     );
 
     return (
-        <div className="flex flex-col gap-2">
+        <>
             {difficultyButton(difficulties.Easy)}
             {difficultyButton(difficulties.Medium)}
             {difficultyButton(difficulties.Hard)}
             {difficultyButton(difficulties.Expert)}
-        </div>
+        </>
     );
 };
 
