@@ -11,43 +11,66 @@ const App = () => {
         difficulties.Medium
     );
     const [board, setBoard] = useState<string>("");
+    const [playing, setPlaying] = useState<boolean>(false);
 
-    const { mutate, isError, isPending, error } = useMutation<
-        string,
-        AxiosError<ErrorDetails>
-    >({
-        mutationFn: async () => {
-            const { data: boardRes } = await axios.post(
-                "/api/sudoku/generate-board",
-                {
-                    difficulty,
-                }
-            );
-            return boardRes;
-        },
-        onSuccess: (data) => setBoard(data),
-    });
+    const { mutate, isPending } = useMutation<string, AxiosError<ErrorDetails>>(
+        {
+            mutationFn: async () => {
+                const { data: boardRes } = await axios.post(
+                    "/api/sudoku/generate-board",
+                    {
+                        difficulty,
+                    }
+                );
+                return boardRes;
+            },
+            onSuccess: (data) => setBoard(data),
+        }
+    );
 
     const updateBoard = (index: number, value: string): void => {
         const newBoard = board.slice(0, index) + value + board.slice(index + 1);
         setBoard(newBoard);
+        checkCompletion(newBoard);
+    };
+
+    const checkCompletion = async (board: string): Promise<void> => {
+        for (let i = 0; i < 81; i++) {
+            if (board[i] === ".") return;
+        }
+        setPlaying(false);
+        await axios.delete("/api/sudoku/remove-saved-board");
     };
 
     return (
-        <div className="w-full h-screen flex items-center justify-center">
+        <div className="w-full h-screen flex items-center justify-center gap-3">
             <div className="grid grid-cols-9 grid-rows-9 w-fit">
-                {Array.from({ length: 81 }, (_, i) => (
-                    <SudokuCell
-                        key={i}
-                        index={i}
-                        value={board[i] === "." ? "" : board[i] || ""}
-                        updateBoard={updateBoard}
-                    />
-                ))}
+                {!isPending
+                    ? Array.from({ length: 81 }, (_, i) => (
+                          <SudokuCell
+                              key={i}
+                              index={i}
+                              value={board[i] === "." ? "" : board[i] || ""}
+                              updateBoard={updateBoard}
+                          />
+                      ))
+                    : ""}
             </div>
             <div>
-                <DifficultySelect setDifficulty={setDifficulty} />
-                <button onClick={() => mutate()}>GetBoard</button>
+                <DifficultySelect
+                    currentDifficulty={difficulty}
+                    setDifficulty={setDifficulty}
+                    playing={playing}
+                />
+                <button
+                    onClick={() => {
+                        setPlaying(true);
+                        mutate();
+                    }}
+                    disabled={playing}
+                >
+                    GetBoard
+                </button>
             </div>
         </div>
     );
