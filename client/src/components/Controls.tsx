@@ -6,10 +6,10 @@ const Controls = ({ mutate }: { mutate: UseMutateFunction }) => {
     const { playing, paused, reset, setPaused, setMessage } = useAppContext();
 
     const buttonClass =
-        "px-5 py-3 rounded bg-blue-600 cursor-pointer hover:bg-blue-700 transition-colors text-white";
+        "px-5 py-3 rounded w-full bg-blue-600 cursor-pointer hover:bg-blue-700 transition-colors text-white";
 
     return (
-        <div className="flex flex-col gap-3">
+        <>
             {playing ? (
                 <>
                     <button
@@ -37,7 +37,7 @@ const Controls = ({ mutate }: { mutate: UseMutateFunction }) => {
                     </button>
                 </>
             )}
-        </div>
+        </>
     );
 };
 
