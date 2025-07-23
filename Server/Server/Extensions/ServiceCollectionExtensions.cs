@@ -31,6 +31,15 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddCustomMiddleware(this IServiceCollection services)
     {
         services.AddExceptionHandler<ExceptionMiddleware>();
+        services.AddCors(options =>
+            options.AddDefaultPolicy(policy =>
+                policy
+                    .WithOrigins("http://localhost:5173")
+                    .WithMethods("GET", "POST", "PUT", "DELETE")
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+            )
+        );
         return services;
     }
 }

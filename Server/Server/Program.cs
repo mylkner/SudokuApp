@@ -20,6 +20,7 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 app.UseSession();
 app.MapControllers();
 app.Run();
