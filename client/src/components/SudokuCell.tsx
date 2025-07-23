@@ -1,15 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import React, { useState } from "react";
 
 interface SudokuCellProps {
     index: number;
     value: string;
+    updateBoard: (index: number, value: string) => void;
 }
 
-const SudokuCell = ({ index, value }: SudokuCellProps) => {
-    const [input, setInput] = useState<string>(value);
-
+const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
     const validate = useMutation({
         mutationFn: async (attemptedInput: number) => {
             const { data: valid } = await axios.post(
@@ -18,7 +16,7 @@ const SudokuCell = ({ index, value }: SudokuCellProps) => {
                 { withCredentials: true }
             );
 
-            if (valid) setInput(attemptedInput.toString());
+            if (valid) updateBoard(index, attemptedInput.toString());
         },
     });
 
@@ -28,15 +26,31 @@ const SudokuCell = ({ index, value }: SudokuCellProps) => {
         validate.mutate(parseInt(attemptedInput));
     };
 
+    const getBorder = (): string => {
+        const row: number = Math.floor(index / 9);
+        const col: number = index % 9;
+        let border: string = "border-blue-500";
+
+        border += row % 3 === 0 ? " border-t-4" : " border-t";
+        border += col % 3 === 2 ? " border-r-4" : " border-r";
+        if (col === 0) border += " border-l-4";
+        if (row === 8) border += " border-b-4";
+
+        return border;
+    };
+
     return (
         <input
-            value={input}
+            value={value}
             onChange={handleChange}
             type="text"
             inputMode="numeric"
             pattern="[0-9]"
-            className="bg-black m-1 h-8 w-8 text-white text-center"
-            disabled={input != ""}
+            className={
+                "bg-black h-10 w-10 text-white text-center focus:outline-none " +
+                getBorder()
+            }
+            disabled={value != ""}
         />
     );
 };
