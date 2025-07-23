@@ -10,7 +10,7 @@ const App = () => {
     const [difficulty, setDifficulty] = useState<Difficulties>(
         difficulties.Medium
     );
-    const [board, setBoard] = useState<string | undefined>();
+    const [board, setBoard] = useState<string>("");
 
     const { mutate, isError, isPending, error } = useMutation<
         string,
@@ -28,28 +28,22 @@ const App = () => {
         onSuccess: (data) => setBoard(data),
     });
 
-    const boardMatrix: string[][] = board
-        ? Array.from({ length: 9 }, (_, i) =>
-              board.slice(i * 9, (i + 1) * 9).split("")
-          )
-        : [];
+    const updateBoard = (index: number, value: string): void => {
+        const newBoard = board.slice(0, index) + value + board.slice(index + 1);
+        setBoard(newBoard);
+    };
 
     return (
         <div className="w-full h-screen flex items-center justify-center">
             <div className="grid grid-cols-9 grid-rows-9 w-fit">
-                {boardMatrix.map((row: string[], rowI) =>
-                    row.map((_, colI) => (
-                        <SudokuCell
-                            key={rowI * 9 + colI}
-                            index={rowI * 9 + colI}
-                            value={
-                                boardMatrix[rowI][colI] == "."
-                                    ? ""
-                                    : boardMatrix[rowI][colI]
-                            }
-                        />
-                    ))
-                )}
+                {Array.from({ length: 81 }, (_, i) => (
+                    <SudokuCell
+                        key={i}
+                        index={i}
+                        value={board[i] === "." ? "" : board[i] || ""}
+                        updateBoard={updateBoard}
+                    />
+                ))}
             </div>
             <div>
                 <DifficultySelect setDifficulty={setDifficulty} />
