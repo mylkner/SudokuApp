@@ -6,6 +6,7 @@ import { difficulties, type Difficulties } from "./types/difficulty";
 import SudokuCell from "./components/SudokuCell";
 import DifficultySelect from "./components/DifficultySelect";
 import Spinner from "./components/Spinner";
+import Timer from "./components/Timer";
 
 const App = () => {
     const [difficulty, setDifficulty] = useState<Difficulties>(
@@ -83,6 +84,10 @@ const App = () => {
     return (
         <div className="w-full h-screen flex items-center justify-center gap-3">
             <div className="flex flex-col gap-1">
+                <div className="flex justify-between">
+                    <Timer playing={playing} paused={paused} />
+                    {difficulty}
+                </div>
                 <div className="relative grid grid-cols-9 grid-rows-9 w-fit">
                     {boardCover}
                     {boardLayout}
