@@ -21,4 +21,11 @@ public class SudokuController(ISudokuService sudokuService) : ControllerBase
         bool correct = sudokuService.CheckUserInput(userInputDto, HttpContext);
         return Ok(correct);
     }
+
+    [HttpDelete("remove-saved-board")]
+    public IActionResult RemoveBoard()
+    {
+        HttpContext.Session.Remove("SudokuBoard");
+        return Ok();
+    }
 }
