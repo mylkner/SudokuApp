@@ -12,7 +12,7 @@ interface SudokuCellProps {
 const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
     const { playing, mistakes, setMistakes, reset, setMessage } =
         useAppContext();
-    const [bgColor, setBgColor] = useState("bg-black");
+    const [bgColor, setBgColor] = useState("bg-white");
 
     const validate = useMutation({
         mutationFn: async (attemptedInput: number) => {
@@ -25,7 +25,7 @@ const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
             if (valid) {
                 updateBoard(index, attemptedInput.toString());
                 setBgColor("bg-green-500");
-                setTimeout(() => setBgColor("bg-black"), 3000);
+                setTimeout(() => setBgColor("bg-white"), 3000);
             } else {
                 setBgColor("bg-red-500");
                 const newMistakes = mistakes + 1;
@@ -33,6 +33,7 @@ const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
                 if (newMistakes === 3) {
                     setMessage("You lost. Try again?");
                     reset();
+                    await axios.delete("/api/sudoku/remove-saved-board");
                 }
             }
         },
@@ -64,9 +65,9 @@ const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
             type="text"
             inputMode="numeric"
             pattern="[0-9]"
-            className={`h-10 w-10 text-white text-center focus:outline-none ${getBorder()} ${bgColor}`}
+            className={`h-10 w-10 text-black text-center focus:outline-none ${getBorder()} ${bgColor}`}
             disabled={value != "" || !playing}
-            onBlur={() => setBgColor("bg-black")}
+            onBlur={() => setBgColor("bg-white")}
         />
     );
 };
