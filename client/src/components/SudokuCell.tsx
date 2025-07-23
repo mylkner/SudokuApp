@@ -28,6 +28,7 @@ const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
                 setTimeout(() => setBgColor("bg-white"), 3000);
             } else {
                 setBgColor("bg-red-500");
+                setTimeout(() => setBgColor("bg-white"), 3000);
                 const newMistakes = mistakes + 1;
                 setMistakes(newMistakes);
                 if (newMistakes === 3) {
@@ -67,7 +68,6 @@ const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
             pattern="[0-9]"
             className={`h-10 w-10 text-black text-center focus:outline-none ${getBorder()} ${bgColor}`}
             disabled={value != "" || !playing}
-            onBlur={() => setBgColor("bg-white")}
         />
     );
 };
