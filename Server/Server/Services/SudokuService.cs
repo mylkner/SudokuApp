@@ -116,16 +116,16 @@ public class SudokuService : ISudokuService
 
         int blanksToMake = difficulty switch
         {
-            "Easy" => 37,
-            "Medium" => 45,
-            "Hard" => 53,
-            "Expert" => 61,
+            "Easy" => 36,
+            "Medium" => 44,
+            "Hard" => 52,
+            "Expert" => 60,
             _ => 45,
         };
         int blanksMade = 0;
 
         int attempts = 0;
-        int maxAttempts = 1000;
+        int maxAttempts = 3000;
 
         while (blanksMade < blanksToMake && attempts < maxAttempts)
         {
@@ -133,11 +133,18 @@ public class SudokuService : ISudokuService
             int pos = rand.Next(81);
             int row = pos / 9;
             int col = pos % 9;
+            int symRow = 8 - row;
+            int symCol = 8 - col;
+
+            if (row == 4 && col == 4)
+                continue; // since desired blanks are even, +1 would mess it up
 
             if (board[row, col] != 0)
             {
                 int backup = board[row, col];
+                int symBackup = board[symRow, symCol];
                 board[row, col] = 0;
+                board[symRow, symCol] = 0;
 
                 int solutions = 0;
                 SolveAndCount(board, ref solutions);
@@ -145,11 +152,14 @@ public class SudokuService : ISudokuService
                 if (solutions != 1)
                 {
                     board[row, col] = backup;
+                    board[symRow, symCol] = symBackup;
                 }
                 else
                 {
                     boardChars[pos] = '.';
-                    blanksMade++;
+                    boardChars[symRow * 9 + symCol] = '.';
+
+                    blanksMade += 2;
                 }
             }
         }
