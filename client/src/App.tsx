@@ -17,24 +17,25 @@ const App = () => {
         setPlaying,
         mistakes,
         message,
+        setMessage,
     } = useAppContext();
 
-    const { mutate, isError, isPending, error } = useMutation<
-        string,
-        AxiosError<ErrorDetails>
-    >({
-        mutationFn: async () => {
-            const { data: boardRes } = await axios.post(
-                "/api/sudoku/generate-board",
-                { difficulty }
-            );
-            return boardRes;
-        },
-        onSuccess: (data) => {
-            setPlaying(true);
-            setBoard(data);
-        },
-    });
+    const { mutate, isPending } = useMutation<string, AxiosError<ErrorDetails>>(
+        {
+            mutationFn: async () => {
+                const { data: boardRes } = await axios.post(
+                    "/api/sudoku/generate-board",
+                    { difficulty }
+                );
+                return boardRes;
+            },
+            onSuccess: (data) => {
+                setPlaying(true);
+                setBoard(data);
+            },
+            onError: (err) => setMessage(err.response?.data?.detail),
+        }
+    );
 
     const boardCover = (isPending || paused) && (
         <div className="absolute inset-0 bg-white flex justify-center items-center">
@@ -76,11 +77,6 @@ const App = () => {
                     {boardLayout}
                 </div>
 
-                {isError && (
-                    <p className="text-red-500 font-semibold">
-                        {error.response?.data.detail}
-                    </p>
-                )}
                 {message && (
                     <p className="font-semibold text-wrap">{message}</p>
                 )}

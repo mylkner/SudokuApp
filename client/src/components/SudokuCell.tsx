@@ -1,7 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useAppContext } from "../context/AppContext";
 import { useState } from "react";
+import type { ErrorDetails } from "../axios/axiosErrorType";
 
 interface SudokuCellProps {
     index: number;
@@ -22,7 +23,7 @@ const SudokuCell = ({ index, value }: SudokuCellProps) => {
     } = useAppContext();
     const [bgColor, setBgColor] = useState("bg-white");
 
-    const validate = useMutation({
+    const validate = useMutation<boolean, AxiosError<ErrorDetails>, number>({
         mutationFn: async (attemptedInput: number) => {
             const { data: valid } = await axios.post(
                 "/api/sudoku/check-input",
@@ -45,7 +46,9 @@ const SudokuCell = ({ index, value }: SudokuCellProps) => {
                     await axios.delete("/api/sudoku/remove-saved-board");
                 }
             }
+            return valid;
         },
+        onError: (err) => setMessage(err.response?.data?.detail),
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

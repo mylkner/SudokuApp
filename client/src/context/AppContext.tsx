@@ -22,8 +22,8 @@ interface AppContextState {
     mistakes: number;
     setMistakes: Dispatch<SetStateAction<number>>;
     reset: () => void;
-    message: string;
-    setMessage: Dispatch<SetStateAction<string>>;
+    message: string | undefined;
+    setMessage: Dispatch<SetStateAction<string | undefined>>;
 }
 
 const AppContext = createContext<AppContextState | undefined>(undefined);
@@ -37,7 +37,7 @@ export const AppContextProvider = ({ children }: { children: ReactNode }) => {
     const [paused, setPaused] = useState<boolean>(false);
     const [time, setTime] = useState<number>(0);
     const [mistakes, setMistakes] = useState<number>(0);
-    const [message, setMessage] = useState<string>("");
+    const [message, setMessage] = useState<string | undefined>("");
 
     const reset = () => {
         setBoard("");
