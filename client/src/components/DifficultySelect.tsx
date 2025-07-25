@@ -1,7 +1,7 @@
 import { useAppContext } from "../context/AppContext";
 import { type Difficulties, difficulties } from "../types/difficulty";
 
-const DifficultySelect = () => {
+const DifficultySelect = ({ loading }: { loading: boolean }) => {
     const {
         difficulty: currentDifficulty,
         setDifficulty,
@@ -12,7 +12,7 @@ const DifficultySelect = () => {
         <button
             className="px-5 py-3 w-1/4 flex items-center justify-center rounded bg-blue-600 cursor-pointer hover:bg-blue-700 transition-colors text-white disabled:bg-blue-400 disabled:cursor-default"
             onClick={() => setDifficulty(difficulty)}
-            disabled={difficulty === currentDifficulty || playing}
+            disabled={difficulty === currentDifficulty || playing || loading}
         >
             {difficulty}
         </button>

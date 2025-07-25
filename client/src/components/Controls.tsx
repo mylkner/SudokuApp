@@ -3,11 +3,17 @@ import { useAppContext } from "../context/AppContext";
 import DifficultySelect from "./DifficultySelect";
 import axios from "axios";
 
-const Controls = ({ mutate }: { mutate: UseMutateFunction }) => {
+const Controls = ({
+    mutate,
+    loading,
+}: {
+    mutate: UseMutateFunction;
+    loading: boolean;
+}) => {
     const { playing, paused, reset, setPaused, setMessage } = useAppContext();
 
     const buttonClass =
-        "px-5 py-3 rounded w-full bg-blue-600 cursor-pointer hover:bg-blue-700 transition-colors text-white";
+        "px-5 py-3 rounded w-full bg-blue-600 cursor-pointer hover:bg-blue-700 transition-colors text-white disabled:cursor-default disabled:bg-blue-400";
 
     const handleReset = async () => {
         reset();
@@ -30,14 +36,14 @@ const Controls = ({ mutate }: { mutate: UseMutateFunction }) => {
                 </>
             ) : (
                 <>
-                    <DifficultySelect />
+                    <DifficultySelect loading={loading} />
                     <button
                         className={buttonClass}
                         onClick={() => {
                             setMessage("");
                             mutate();
                         }}
-                        disabled={playing}
+                        disabled={playing || loading}
                     >
                         Start
                     </button>

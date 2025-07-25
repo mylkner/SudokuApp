@@ -83,7 +83,7 @@ const App = () => {
             </div>
 
             <div className="flex flex-col gap-2 min-w-[360px]">
-                <Controls mutate={mutate} />
+                <Controls mutate={mutate} loading={isPending} />
             </div>
         </div>
     );
