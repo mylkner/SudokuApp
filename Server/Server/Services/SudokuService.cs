@@ -194,7 +194,7 @@ public class SudokuService : ISudokuService
                 if (board[row, col] == 0)
                 {
                     int options = 0;
-                    for (int num = 0; num < 9; num++)
+                    for (int num = 1; num <= 9; num++)
                     {
                         if (IsValid(board, row, col, num))
                             options++;
