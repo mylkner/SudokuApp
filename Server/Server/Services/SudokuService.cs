@@ -15,7 +15,7 @@ public class SudokuService : ISudokuService
         FillBoard(board, rand);
         string flattenedBoard = FlattenBoard(board);
         context.Session.SetString("SudokuBoard", flattenedBoard);
-        return MakePartialBoard(flattenedBoard, difficulty, rand);
+        return MakePartialBoard(board, flattenedBoard, difficulty, rand);
     }
 
     public bool CheckUserInput(UserInputDto userInputDto, HttpContext context)
@@ -105,13 +105,18 @@ public class SudokuService : ISudokuService
         return sb.ToString();
     }
 
-    private static string MakePartialBoard(string flattenedBoard, string difficulty, Random rand)
+    private static string MakePartialBoard(
+        int[,] board,
+        string flattenedBoard,
+        string difficulty,
+        Random rand
+    )
     {
-        char[] board = flattenedBoard.ToCharArray();
-        //todo: add unique solution check
+        char[] boardChars = flattenedBoard.ToCharArray();
+
         int blanksToMake = difficulty switch
         {
-            "Easy" => 35,
+            "Easy" => 37,
             "Medium" => 45,
             "Hard" => 53,
             "Expert" => 61,
@@ -119,16 +124,94 @@ public class SudokuService : ISudokuService
         };
         int blanksMade = 0;
 
-        while (blanksMade < blanksToMake)
+        int attempts = 0;
+        int maxAttempts = 1000;
+
+        while (blanksMade < blanksToMake && attempts < maxAttempts)
         {
+            attempts++;
             int pos = rand.Next(81);
-            if (board[pos] != '.')
+            int row = pos / 9;
+            int col = pos % 9;
+
+            if (board[row, col] != 0)
             {
-                board[pos] = '.';
-                blanksMade++;
+                int backup = board[row, col];
+                board[row, col] = 0;
+
+                int solutions = 0;
+                SolveAndCount(board, ref solutions);
+
+                if (solutions != 1)
+                {
+                    board[row, col] = backup;
+                }
+                else
+                {
+                    boardChars[pos] = '.';
+                    blanksMade++;
+                }
             }
         }
 
-        return new string(board);
+        return new string(boardChars);
+    }
+
+    private static void SolveAndCount(int[,] board, ref int solutions)
+    {
+        (int row, int col)? cell = FindCellWithLeastOptions(board);
+
+        if (cell == null)
+        {
+            solutions++;
+            return;
+        }
+
+        (int row, int col) = cell.Value;
+
+        for (int num = 1; num <= 9; num++)
+        {
+            if (IsValid(board, row, col, num))
+            {
+                board[row, col] = num;
+                SolveAndCount(board, ref solutions);
+                board[row, col] = 0;
+                if (solutions > 1)
+                    return;
+            }
+        }
+    }
+
+    private static (int row, int col)? FindCellWithLeastOptions(int[,] board)
+    {
+        int minOptions = 10;
+        (int, int)? cell = null;
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (board[row, col] == 0)
+                {
+                    int options = 0;
+                    for (int num = 0; num < 9; num++)
+                    {
+                        if (IsValid(board, row, col, num))
+                            options++;
+                    }
+
+                    if (options < minOptions)
+                    {
+                        minOptions = options;
+                        cell = (row, col);
+
+                        if (minOptions == 1)
+                            return cell;
+                    }
+                }
+            }
+        }
+
+        return cell;
     }
 }
