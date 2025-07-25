@@ -6,12 +6,20 @@ import { useState } from "react";
 interface SudokuCellProps {
     index: number;
     value: string;
-    updateBoard: (index: number, value: string) => void;
 }
 
-const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
-    const { playing, mistakes, setMistakes, reset, setMessage } =
-        useAppContext();
+const SudokuCell = ({ index, value }: SudokuCellProps) => {
+    const {
+        playing,
+        mistakes,
+        setMistakes,
+        reset,
+        setMessage,
+        board,
+        setBoard,
+        difficulty,
+        time,
+    } = useAppContext();
     const [bgColor, setBgColor] = useState("bg-white");
 
     const validate = useMutation({
@@ -57,6 +65,40 @@ const SudokuCell = ({ index, value, updateBoard }: SudokuCellProps) => {
         if (row === 8) border += " border-b-4";
 
         return border;
+    };
+
+    const updateBoard = (index: number, value: string): void => {
+        const newBoard = board.slice(0, index) + value + board.slice(index + 1);
+        setBoard(newBoard);
+        checkCompletion(newBoard);
+    };
+
+    const checkCompletion = async (board: string): Promise<void> => {
+        for (let i = 0; i < 81; i++) {
+            if (board[i] === ".") return;
+        }
+        setMessage(
+            `You won on ${
+                difficulty.slice(0, 1).toLowerCase() + difficulty.slice(1)
+            } mode in ${formatFinishTime(time)}.`
+        );
+        reset();
+        await axios.delete("/api/sudoku/remove-saved-board");
+    };
+
+    const formatFinishTime = (finishTime: number): string => {
+        const seconds = finishTime % 60;
+        const minutes = Math.floor(finishTime / 60) % 60;
+        const hours = Math.floor(finishTime / 3600);
+
+        const formatName = (type: string, num: number) => {
+            return `${num} ${num === 1 ? type.slice(0, -1) : type}`;
+        };
+
+        return `${formatName("hours", hours)}, ${formatName(
+            "minutes",
+            minutes
+        )} and ${formatName("seconds", seconds)}`;
     };
 
     return (

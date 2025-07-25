@@ -17,9 +17,6 @@ const App = () => {
         setPlaying,
         mistakes,
         message,
-        setMessage,
-        time,
-        reset,
     } = useAppContext();
 
     const { mutate, isError, isPending, error } = useMutation<
@@ -29,9 +26,7 @@ const App = () => {
         mutationFn: async () => {
             const { data: boardRes } = await axios.post(
                 "/api/sudoku/generate-board",
-                {
-                    difficulty,
-                }
+                { difficulty }
             );
             return boardRes;
         },
@@ -41,42 +36,8 @@ const App = () => {
         },
     });
 
-    const updateBoard = (index: number, value: string): void => {
-        const newBoard = board.slice(0, index) + value + board.slice(index + 1);
-        setBoard(newBoard);
-        checkCompletion(newBoard);
-    };
-
-    const checkCompletion = async (board: string): Promise<void> => {
-        for (let i = 0; i < 81; i++) {
-            if (board[i] === ".") return;
-        }
-        setMessage(
-            `You won on ${
-                difficulty.slice(0, 1).toLowerCase() + difficulty.slice(1)
-            } mode in ${formatFinishTime(time)}.`
-        );
-        reset();
-        await axios.delete("/api/sudoku/remove-saved-board");
-    };
-
-    const formatFinishTime = (finishTime: number): string => {
-        const seconds = finishTime % 60;
-        const minutes = Math.floor(finishTime / 60) % 60;
-        const hours = Math.floor(finishTime / 3600);
-
-        const formatName = (type: string, num: number) => {
-            return `${num} ${num === 1 ? type.slice(0, -1) : type}`;
-        };
-
-        return `${formatName("hours", hours)}, ${formatName(
-            "minutes",
-            minutes
-        )} and ${formatName("seconds", seconds)}`;
-    };
-
     const boardCover = (isPending || paused) && (
-        <div className="absolute inset-0 bg-black flex justify-center items-center">
+        <div className="absolute inset-0 bg-white flex justify-center items-center">
             {isPending && <Spinner />}
             {paused && (
                 <div
@@ -99,7 +60,6 @@ const App = () => {
             key={i}
             index={i}
             value={board[i] === "." ? "" : board[i] || ""}
-            updateBoard={updateBoard}
         />
     ));
 
@@ -127,7 +87,7 @@ const App = () => {
             </div>
 
             <div className="flex flex-col gap-2 min-w-[360px]">
-                {<Controls mutate={mutate} />}
+                <Controls mutate={mutate} />
             </div>
         </div>
     );
