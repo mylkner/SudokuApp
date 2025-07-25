@@ -20,6 +20,8 @@ else
 }
 
 app.UseHttpsRedirection();
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.UseCors();
 app.UseSession();
 app.MapControllers();
