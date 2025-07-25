@@ -22,7 +22,7 @@ public class SudokuService : ISudokuService
     {
         string solvedBoard =
             context.Session.GetString("SudokuBoard")
-            ?? throw new BadRequestException("No board found");
+            ?? throw new BadRequestException("No board found.");
         return solvedBoard[userInputDto.Index] == userInputDto.Value + '0';
     }
 
