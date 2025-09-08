@@ -14,38 +14,18 @@ public class ExceptionMiddleware(IHostEnvironment env, ILogger<ExceptionMiddlewa
         CancellationToken cancellationToken
     )
     {
-        ProblemDetails errorRes = new();
-
-        bool showDetails = env.IsDevelopment();
-        string title = "Internal Server Error";
-        int statusCode = (int)HttpStatusCode.InternalServerError;
-        string detail = "An error has occurred.";
-
-        if (exception is CustomExceptionBase customException)
-        {
-            showDetails = showDetails || customException.UserSafe;
-            title = showDetails ? customException.GetType().Name.Replace("Exception", "") : title;
-            statusCode = showDetails ? customException.StatusCode : statusCode;
-            detail = showDetails ? customException.Message : detail;
-        }
-        else if (showDetails)
-        {
-            title = exception.GetType().Name.Replace("Exception", "");
-            detail = exception.Message;
-        }
-
-        errorRes.Status = statusCode;
-        errorRes.Detail = detail;
-        errorRes.Title = title;
+        CustomExceptionBase errorRes =
+            exception as CustomExceptionBase ?? new InternalServerErrorException(exception.Message);
+        ProblemDetails problemDetails = errorRes.ToProblemDetails(httpContext, env.IsDevelopment());
 
         logger.LogError(
             exception,
             "Unhandled exception | Trace ID: {TraceIdentifier}",
-            httpContext.TraceIdentifier
+            problemDetails.Extensions["traceId"]
         );
 
-        httpContext.Response.StatusCode = errorRes.Status.Value;
-        await httpContext.Response.WriteAsJsonAsync(errorRes, cancellationToken: cancellationToken);
+        httpContext.Response.StatusCode = errorRes.StatusCode;
+        await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken: cancellationToken);
         return true;
     }
 }
